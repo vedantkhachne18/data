@@ -1,0 +1,20 @@
+public void waitForLoaderSpinnerToDisappear() {
+		int counter = 1;
+		By spinnerLoaderLocator = By.xpath("//*[local-name()='svg'][@aria-label='audio-loading']");
+		this.waitFor(3);
+		while (this.isElementVisibilityLocated(spinnerLoaderLocator)) {
+			counter++;
+			System.out.println("Counter--> " + counter);
+			if (this.checkElementInVisibile(spinnerLoaderLocator)) {
+				DriverFactory.getObjAssertLogUtils().logReporter("Verify Processing... is disappeared", true);
+				break;
+			} else {
+				DriverFactory.getObjAssertLogUtils().logReporter("Verify Processing... is appeared",
+						"waiting for 3 sec", true);
+				this.waitFor(3);
+				if (counter > 3)
+					break;
+			}
+		}
+		DriverFactory.getObjAssertLogUtils().logReporter("Verify Spinner Processing... is disappeared", true);
+	}
