@@ -123,3 +123,20 @@ public boolean checkChildIframe(int intChildFrame) {
 			return false;
 		}
 	}
+
+
+public int checkIframeElement(By locator) {
+		try {
+			System.out.println(" intLocatorCount before ");
+			int intLocatorCount = DriverFactory.getDriver().findElements(locator).size();
+			System.out.println(" intLocatorCount " + intLocatorCount);
+			return intLocatorCount;
+		} catch (Exception e) {
+			System.out.println(" intLocatorCount " + 0);
+			logger.error("I got Exception: ", e);
+			return 0;
+		}
+	}
+
+
+
