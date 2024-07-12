@@ -28,3 +28,98 @@ public String getRandomStringWithNumbers(int lenght) {
 		}
 		return randomstring;
 	}
+
+/**
+	 * Below method is used for only switching iFrames single or Nested. For
+	 * this method no need to switch frame you just pass locator which you want
+	 * and perform action event, It will switch iframe automatically and perform
+	 * locator action event.
+	 * 
+	 * @param locator
+	 *            Created By : Framework Developer
+	 * 
+	 */
+	public boolean switchToIframeSingleWithNestedUsingIframeByIndex(By locator) {
+
+		try {
+
+			int intParentFrame;
+			int intChildFrame;
+			int intLocatorCount = 0;
+			int intFrameCount = -1;
+			int intCount = 0;
+			DriverFactory.getDriver().switchTo().defaultContent();
+			int intParentIframeCount = DriverFactory.getDriver().findElements(By.tagName("iframe")).size();
+			System.out.println("**************** into Parent Iframe Count ---> " + intParentIframeCount);
+
+			for (intParentFrame = 0; intParentFrame < intParentIframeCount; intParentFrame++){
+				DriverFactory.getDriver().switchTo().defaultContent();
+				DriverFactory.getDriver().switchTo().frame(intParentFrame);
+				System.out
+						.println(" **************** into Parent Iframe Count continue looping --->  " + intParentFrame);
+				intLocatorCount = DriverFactory.getDriver().findElements(locator).size();
+				System.out.println("**************** into Parent iframe Locator size found ---> " + intLocatorCount);
+
+				while (!(intLocatorCount > 0)) {
+
+					intCount++;
+					int intChildIframeCount = DriverFactory.getDriver().findElements(By.tagName("iframe")).size();
+					System.out.println("**************** into Child Iframe Count ---> " + intChildIframeCount);
+
+					System.out.println(
+							"**************** into Child Iframe Count continue looping --->  " + intChildIframeCount);
+
+					for (intChildFrame = 0; intChildFrame < intChildIframeCount; intChildFrame++) {
+						checkChildIframe(intChildFrame);
+
+						intLocatorCount = checkIframeElement(locator);
+						System.out.println(
+								" **************** into Parent iframe Locator size found ---> " + intLocatorCount);
+
+						if (intLocatorCount > 0) {
+							System.out.println(" Locator found successfully and  Break child loop..!!!!!!!");
+							break;
+						}
+					}
+					if (intCount > 0) {
+						break;
+					}
+				}
+				if (intLocatorCount > 0)
+
+				{
+					intFrameCount = intParentFrame;
+					System.out.println("**************** Final locator found frame count  ----> " + intFrameCount);
+					System.out.println(" **************** Locator found successfully and  Break parent loop..!!!!!!!");
+					break;
+				}
+			}
+			return true;
+
+		} catch (NoSuchFrameException exFrameException) {
+			logger.error("I got Exception: ", exFrameException);
+			return false;
+		} catch (NoSuchElementException exception) {
+			logger.error("I got Exception: ", exception);
+			return false;
+		} catch (Exception exception) {
+			logger.error("I got Exception: ", exception);
+			return false;
+
+		}
+
+	}
+
+
+public boolean checkChildIframe(int intChildFrame) {
+		try {
+			System.out.println(" intChildFrame before try");
+			DriverFactory.getDriver().switchTo().frame(intChildFrame);
+			System.out.println(" intChildFrame " + intChildFrame);
+			return true;
+		} catch (Exception e) {
+			System.out.println(" intChildFrame catch");
+			logger.error("I got Exception: ", e);
+			return false;
+		}
+	}
