@@ -139,4 +139,86 @@ public int checkIframeElement(By locator) {
 	}
 
 
+/**
+	 * @Method : verifyTableContent
+	 * @Description : it will check given data in whole table
+	 * @param :
+	 *            locator - By identification of element (table with all rows)
+	 * @param :
+	 *            columnHeader - String column header
+	 * @param :
+	 *            ContentToVerify - String Content to be verify
+	 * @author : Automation Tester
+	 */
+	public boolean verifyTableContent(By locator, String columnHeader, String ContentToVerify) {
+		Hashtable<String, String> dataColumnHeader = new Hashtable<String, String>();
+		int intColumnNumber = 1;
+		boolean blnverify = false;
+		try {
+			waitForElementPresence(locator);
+			WebElement weResultTable = objPojo.getDriver().findElement(locator);
+
+			waitForPresenceOfNestedElementsLocated(locator, By.xpath(".//thead/tr/th"));
+			List<WebElement> weColumnsHeaders = weResultTable.findElements(By.xpath(".//thead/tr/th"));
+			for (WebElement weColumnHeader : weColumnsHeaders) {
+				String strHeader = weColumnHeader.getText().trim();
+				// System.out.println("strHeader------->" + strHeader);
+				if (!strHeader.equals(""))
+					dataColumnHeader.put(strHeader, String.valueOf(intColumnNumber));
+				intColumnNumber++;
+			}
+
+			waitForPresenceOfNestedElementsLocated(locator, By.xpath(".//tbody/tr"));
+			List<WebElement> weRows = weResultTable.findElements(By.xpath(".//tbody/tr"));
+			for (WebElement weRow : weRows) {
+				WebElement weExceptedClm = weRow
+						.findElement(By.xpath(".//td[" + dataColumnHeader.get(columnHeader) + "]"));
+				// System.out.println("************************---------->" +
+				// weExceptedClm.getText());
+				if (weExceptedClm.getText().trim().equals(ContentToVerify)) {
+					blnverify = true;
+					return blnverify;
+				}
+			}
+			return blnverify;
+		} catch (NoSuchElementException exception) {
+			objPojo.setCustomException("Timeout & NoSuchElement Exception");
+			System.out.println("I got no such " + exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		} catch (TimeoutException exception) {
+			objPojo.setCustomException("Timeout & NoSuchElement Exception");
+			System.out.println("I got timeout " + exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		} catch (NotFoundException exception) {
+			objPojo.setCustomException("NotFound Exception");
+			System.out.println("I got timeout " + exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		} catch (ElementNotVisibleException exception) {
+			objPojo.setCustomException("ElementNotVisibleException");
+			System.out.println("I got timeout " + exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		} catch (ElementNotInteractableException exception) {
+			objPojo.setCustomException("ElementNotInteractableException Exception");
+			System.out.println("I got timeout " + exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		} catch (ElementNotSelectableException exception) {
+			objPojo.setCustomException("ElementNotSelectableException Exception");
+			System.out.println("I got timeout " + exception.getMessage());
+			exception.printStackTrace();
+			return false;
+		} catch (Exception exception) {
+			objPojo.setCustomException("NoSuchElement Exception");
+			exception.printStackTrace();
+			return false;
+		}
+	}
+
+
+
+
 
