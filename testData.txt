@@ -220,5 +220,32 @@ public int checkIframeElement(By locator) {
 
 
 
+/**
+	 * @Description : This is wrapper method wait for element presence located
+	 * @param : locator - By identification of element
+	 */
+	public void waitForPresenceOfNestedElementLocated(WebElement webElement, By sub_locator) throws NotFoundException {
+		DriverFactory.getWebDriverWait()
+				.until(ExpectedConditions.presenceOfNestedElementLocatedBy(webElement, sub_locator));
+	}
+
+	/**
+	 * @Description : This is wrapper method wait for element presence located
+	 * @param : locator - By identification of element
+	 */
+	public void waitForPresenceOfNestedElementsLocated(By locator, By sub_locator) throws NotFoundException {
+		DriverFactory.getWebDriverWait()
+				.until(ExpectedConditions.presenceOfNestedElementsLocatedBy(locator, sub_locator));
+	}
+
+
+
+
+
+
+
+
+
+
 
 
