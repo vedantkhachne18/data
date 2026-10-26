@@ -1,0 +1,41 @@
+import { test as base } from '@playwright/test';
+import * as allure from 'allure-js-commons';
+
+const environment = (process.env.TEST_ENV || 'qa').toLowerCase();
+const prefix = environment.toUpperCase();
+
+const envValue = (key: string, fallback = '') =>
+  process.env[`${prefix}_${key}`]?.trim() ||
+  process.env[key]?.trim() ||
+  fallback;
+
+export const test = base.extend({
+  page: async ({ page }, use, testInfo) => {
+    // Label for Allure environment matching
+    await allure.label('env', environment);
+
+    // Dynamic browser detection from Playwright engine
+    const realBrowser =
+      testInfo.project.use?.channel ||
+      testInfo.project.use?.browserName ||
+      process.env.BROWSER ||
+      'chromium';
+
+    // Test execution parameters
+    await allure.parameter('Environment', environment.toUpperCase());
+    await allure.parameter('Browser', realBrowser);
+    await allure.parameter('Timeout', envValue('TIMEOUT', '30000'));
+    await allure.parameter('Retries', String(testInfo.retry));
+
+    // Execute test
+    await use(page);
+
+    // Dynamic: Automatically log ONLY the URL navigated to in this specific test
+    const finalUrl = page.url();
+    if (finalUrl && finalUrl !== 'about:blank') {
+      await allure.parameter('Test URL', finalUrl);
+    }
+  },
+});
+
+export { expect } from '@playwright/test';

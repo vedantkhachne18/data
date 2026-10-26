@@ -1,0 +1,95 @@
+
+
+
+import { defineConfig } from "allure";
+import "dotenv/config";
+
+const env = (process.env.TEST_ENV || "qa").toLowerCase();
+const prefix = env.toUpperCase();
+
+const getEnv = (key, fallback = "") =>
+  process.env[`${prefix}_${key}`]?.trim() ||
+  process.env[key]?.trim() ||
+  fallback;
+
+const sharedVariables = {
+  Environment: prefix,
+  MinWeight: getEnv("MIN_WEIGHT", "10000"),
+  MaxWeight: getEnv("MAX_WEIGHT", "30000"),
+  Headless: getEnv("HEADLESS", "false"),
+  Workers: getEnv("WORKERS", "3"),
+  Timeout: getEnv("TIMEOUT", "30000"),
+  Retries: getEnv("RETRIES", "0"),
+};
+
+export default defineConfig({
+  name: "Automation Framework",
+
+  output: "./allure-report",
+  historyPath: "./history.jsonl",
+
+  variables: {
+    "Automation Framework": "Playwright",
+    Language: "TypeScript",
+    ...sharedVariables,
+  },
+
+  environments: {
+    qa: {
+      name: "QA Environment",
+      matcher: ({ labels }) =>
+        labels.some(({ name, value }) => name === "env" && value === "qa"),
+      variables: { ...sharedVariables, Environment: "QA" },
+    },
+
+    staging: {
+      name: "Staging Environment",
+      matcher: ({ labels }) =>
+        labels.some(({ name, value }) => name === "env" && value === "staging"),
+      variables: { ...sharedVariables, Environment: "Staging" },
+    },
+
+    prod: {
+      name: "Production Environment",
+      matcher: ({ labels }) =>
+        labels.some(({ name, value }) => name === "env" && value === "prod"),
+      variables: { ...sharedVariables, Environment: "Production" },
+    },
+  },
+
+  qualityGate: {
+    rules: [{ maxFailures: 5, fastFail: true }],
+  },
+
+  plugins: {
+    awesome: {
+      options: {
+        reportName: "ABC Allure Report",
+        singleFile: true,
+        reportLanguage: "en",
+        open: false,
+        publish: false,
+      },
+    },
+    // classic: {
+    //   options: {
+    //     reportName: "ABC Classic",
+    //     singleFile: false,
+    //     reportLanguage: "en",
+    //   },
+    // },
+    // dashboard: {
+    //   options: {
+    //     singleFile: false,
+    //     reportName: "ABC-Dashboard",
+    //     reportLanguage: "en",
+    //   },
+    // },
+    csv: {
+      options: { fileName: "allure-report.csv" },
+    },
+    log: {
+      options: { groupBy: "none" },
+    },
+  },
+});
